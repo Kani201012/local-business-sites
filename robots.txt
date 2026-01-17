@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://kani201012.github.io/local-business-sites/sitemap.xml
