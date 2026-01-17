@@ -70,6 +70,9 @@ with tabs[0]:
 with tabs[1]:
     hero_title = st.text_input("Hero Headline", f"Premium {biz_cat} Services in {biz_name}")
     seo_desc = st.text_input("Meta Description (160 Chars)", f"The #1 {biz_cat} in your area. Trusted by 500+ clients.")
+    # --- NEW KEYWORD ENGINE ---
+    biz_keywords = st.text_input("Target Keywords (Comma separated)", 
+                              placeholder="e.g. Best IT Consulting, Cloud Experts, Business Tech Bengaluru")
     biz_services = st.text_area("Our Services (One per line)", "Web Development\nCloud Solutions\nCyber Security")
     about_text = st.text_area("About Us (Deep E-E-A-T Content)", height=350)
 
@@ -102,25 +105,30 @@ if st.button("🚀 GENERATE PREMIUM COMPLIANT BIZ PACKAGE"):
 
     def get_full_html(title, desc, content, is_index=False):
         gsc = f'<meta name="google-site-verification" content="{gsc_code}">' if (is_index and gsc_code) else ""
+        # Inject Keywords Meta
+        meta_keywords = f'<meta name="keywords" content="{biz_keywords}">' if biz_keywords else ""
+        
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {gsc}
+    {meta_keywords}
     <title>{title} | {biz_name}</title>
     <meta name="description" content="{desc}">
     <link rel="canonical" href="{prod_url}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family={font_family.replace(' ', '+')}:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>{theme_css}</style>
-    <!-- Point 14: LocalBusiness Schema -->
+    <!-- Point 14: LocalBusiness Schema with Keywords -->
     <script type="application/ld+json">
     {{
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
       "name": "{biz_name}",
       "description": "{seo_desc}",
+      "keywords": "{biz_keywords}",
       "url": "{prod_url}",
       "telephone": "{biz_phone}",
       "address": {{ "@type": "PostalAddress", "streetAddress": "{biz_addr}" }},
@@ -147,6 +155,8 @@ if st.button("🚀 GENERATE PREMIUM COMPLIANT BIZ PACKAGE"):
                 <h4 class="text-white font-black text-2xl mb-4 tracking-tighter uppercase">{biz_name}</h4>
                 <p class="max-w-sm mb-6">{biz_addr}</p>
                 <p class="text-sm font-bold">Build By <a href="https://www.kaydiemscriptlab.com" class="text-white underline">Kaydiem Script Lab</a></p>
+                <!-- Hidden Keywords for Crawler Relevance -->
+                <div style="display:none;">{biz_keywords}</div>
             </div>
             <div>
                 <h4 class="text-white font-bold mb-4">LEGAL</h4>
@@ -180,8 +190,14 @@ if st.button("🚀 GENERATE PREMIUM COMPLIANT BIZ PACKAGE"):
     </section>
     
     <section class="max-w-7xl mx-auto py-24 px-6">
-        <h2 class="text-4xl font-black mb-12 uppercase tracking-tighter text-center">Our Expertise</h2>
-        <div class="grid md:grid-cols-3 gap-10">{service_cards}</div>
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+                <h2 class="text-4xl font-black mb-12 uppercase tracking-tighter">Our Expertise</h2>
+                <div class="grid gap-6">{service_cards}</div>
+            </div>
+            <!-- Point 13: Using Keywords in Alt Text -->
+            <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837" alt="{biz_name} - Specialized in {biz_keywords}" class="rounded-3xl shadow-2xl">
+        </div>
     </section>
 
     <section class="bg-light py-24 px-6">
@@ -204,5 +220,5 @@ if st.button("🚀 GENERATE PREMIUM COMPLIANT BIZ PACKAGE"):
         zf.writestr("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {prod_url}sitemap.xml")
         zf.writestr("sitemap.xml", f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{prod_url}index.html</loc></url><url><loc>{prod_url}about.html</loc></url></urlset>')
 
-    st.success("💎 Premium Verified Package Architecture Finished!")
+    st.success("💎 Premium Verified Package with Keyword Injection Finished!")
     st.download_button("📥 DOWNLOAD ENTERPRISE BIZ PACKAGE", zip_buf.getvalue(), f"{biz_name.lower()}_enterprise.zip")
