@@ -1,94 +1,110 @@
 import streamlit as st
 
-st.header("🏆 Ultimate Google SEO Website Generator")
+st.set_page_config(layout="wide")
+st.title("💎 Enterprise Google Site Generator")
 
-# 1. Inputs for 100% Business Info
-col1, col2 = st.columns(2)
-with col1:
-    biz_name = st.text_input("Business Name")
-    biz_phone = st.text_input("Phone (with +91)")
-    biz_city = st.text_input("City/Area")
-    biz_category = st.text_input("Category (e.g. Pharmacy, Cafe)")
-with col2:
-    biz_address = st.text_area("Full Address (from Google Maps)")
-    biz_hours = st.text_input("Opening Hours (e.g. Mon-Sat 9AM-9PM)")
-    biz_services = st.text_area("Services (Comma separated: Home Delivery, Consultation, etc.)")
+# --- PROFESSIONAL INPUTS ---
+with st.expander("Step 1: Core Business Data (NAP Consistency)", expanded=True):
+    col1, col2 = st.columns(2)
+    with col1:
+        name = st.text_input("Business Name", "Sharma Premium Electronics")
+        phone = st.text_input("Verified Phone", "+91 98765 43210")
+        email = st.text_input("Business Email", "contact@sharma.com")
+    with col2:
+        category = st.text_input("Business Category", "Consumer Electronics Store")
+        address = st.text_area("Full Address (Must match Google Maps exactly)")
+        map_link = st.text_input("Google Maps Embed Link (from Share -> Embed Map)")
 
-# 2. The Advanced Template
-seo_html = f"""
+with st.expander("Step 2: SEO & Trust Signals"):
+    services = st.text_area("Services (One per line)", "AC Repair\nOven Service\nGenuine Parts")
+    hours = st.text_input("Working Hours", "Mon - Sat: 10:00 AM - 08:00 PM")
+    description = st.text_area("SEO Description", "Leading electronics provider in South Delhi for 20+ years.")
+
+# --- THE HIGH-END HTML GENERATOR ---
+# This uses Tailwind CSS for a professional "SaaS" look
+enterprise_html = f"""
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{biz_name} - {biz_category} in {biz_city}</title>
-    <meta name="description" content="Visit {biz_name} in {biz_city}. Specializing in {biz_services}. Call {biz_phone} for details.">
+    <title>{name} | {category} in {address[:20]}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     
-    <!-- GOOGLE SCHEMA (JSON-LD) - THIS IS WHAT MAKES IT RANK -->
+    <!-- ADVANCED SCHEMA FOR GOOGLE RANKING -->
     <script type="application/ld+json">
     {{
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "name": "{biz_name}",
-      "image": "https://www.google.com/maps/vt/pb=!1m4!1m3!1i17!2i77545!3i50343!2m3!1e0!2sm!3i385055030!3m8!2sen!3sin!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0",
-      "address": {{
-        "@type": "PostalAddress",
-        "streetAddress": "{biz_address}",
-        "addressLocality": "{biz_city}",
-        "addressRegion": "IN"
-      }},
-      "telephone": "{biz_phone}",
-      "openingHours": "{biz_hours}",
-      "priceRange": "$$"
+      "name": "{name}",
+      "description": "{description}",
+      "address": {{ "@type": "PostalAddress", "streetAddress": "{address}" }},
+      "telephone": "{phone}",
+      "openingHours": "{hours}"
     }}
     </script>
-
-    <style>
-        :root {{ --google-blue: #4285F4; --google-green: #34A853; }}
-        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: #333; }}
-        header {{ background: var(--google-blue); color: white; padding: 40px 20px; text-align: center; }}
-        .container {{ max-width: 800px; margin: auto; padding: 20px; }}
-        .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: -30px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }}
-        .btn {{ display: block; text-align: center; padding: 15px; margin: 10px 0; border-radius: 5px; text-decoration: none; font-weight: bold; }}
-        .call-btn {{ background: var(--google-green); color: white; }}
-        .map-btn {{ border: 1px solid var(--google-blue); color: var(--google-blue); }}
-        .services {{ background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 20px; }}
-    </style>
 </head>
-<body>
+<body class="bg-gray-50 font-['Inter']">
 
-<header>
-    <h1>{biz_name}</h1>
-    <p>{biz_category} in {biz_city}</p>
-</header>
-
-<div class="container">
-    <div class="card">
-        <p><strong>📍 Address:</strong> {biz_address}</p>
-        <p><strong>⏰ Hours:</strong> {biz_hours}</p>
-        
-        <a href="tel:{biz_phone}" class="call-btn btn">📞 Call Now: {biz_phone}</a>
-        <a href="https://www.google.com/maps/search/?api=1&query={biz_name} {biz_address}" class="map-btn btn">🗺️ Get Directions</a>
-
-        <div class="services">
-            <h3>Our Services</h3>
-            <p>{biz_services}</p>
+    <!-- NAVBAR -->
+    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <span class="text-xl font-bold text-blue-600">{name}</span>
+            <a href="tel:{phone}" class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold">Call Now</a>
         </div>
-    </div>
-    
-    <div style="margin-top:20px; text-align:center;">
-        <p><small>Proudly serving {biz_city} | Mobile Optimized Business Site</small></p>
-    </div>
-</div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="bg-white py-16 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">{name}</h1>
+            <p class="text-xl text-gray-600 mb-8">{description}</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="https://wa.me/{phone.replace(' ', '')}" class="bg-green-500 text-white px-8 py-3 rounded-lg font-bold">Order on WhatsApp</a>
+                <a href="#map" class="bg-gray-800 text-white px-8 py-3 rounded-lg font-bold">Visit Store</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- SERVICES -->
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <h2 class="text-2xl font-bold mb-8">Specialized Services</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                {"".join([f'<div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500"><h3 class="font-bold text-lg">{s}</h3><p class="text-gray-500 mt-2">Professional service in {address.split(",")[-1]}</p></div>' for s in services.splitlines()])}
+            </div>
+        </div>
+    </section>
+
+    <!-- MAP & CONTACT -->
+    <section id="map" class="py-12 bg-white">
+        <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12">
+            <div>
+                <h2 class="text-2xl font-bold mb-4">Contact & Location</h2>
+                <p class="text-gray-600 mb-2">📍 {address}</p>
+                <p class="text-gray-600 mb-2">📞 {phone}</p>
+                <p class="text-gray-600 mb-6">⏰ {hours}</p>
+                <div class="rounded-lg overflow-hidden border">
+                    {map_link}
+                </div>
+            </div>
+            <div class="bg-blue-50 p-8 rounded-2xl">
+                <h3 class="text-xl font-bold mb-4">Send a Query</h3>
+                <input type="text" placeholder="Your Name" class="w-full p-3 mb-4 rounded-lg border">
+                <textarea placeholder="How can we help you?" class="w-full p-3 mb-4 rounded-lg border h-32"></textarea>
+                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Request a Callback</button>
+            </div>
+        </div>
+    </section>
 
 </body>
 </html>
 """
 
-if st.button("🚀 Build Optimized Website"):
-    if biz_name and biz_phone:
-        st.subheader("Your SEO-Ready Code")
-        st.code(seo_html, language="html")
-        st.success("Website generated with Google JSON-LD Schema!")
-    else:
-        st.error("Please fill in Business Name and Phone.")
+if st.button("🚀 Generate 1st Class Business Website"):
+    st.subheader("Professional Website Code")
+    st.code(enterprise_html, language="html")
+    st.write("---")
+    st.subheader("Live Preview (Simulated)")
+    st.components.v1.html(enterprise_html, height=600, scrolling=True)
