@@ -1,110 +1,91 @@
-import streamlit as st
+import os
 
-st.set_page_config(layout="wide")
-st.title("💎 Enterprise Google Site Generator")
+def generate_compliant_site(biz_data):
+    # 1. SETUP STRUCTURE (Point 8: Site Structure)
+    folder_name = biz_data['name'].lower().replace(" ", "-")
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
 
-# --- PROFESSIONAL INPUTS ---
-with st.expander("Step 1: Core Business Data (NAP Consistency)", expanded=True):
-    col1, col2 = st.columns(2)
-    with col1:
-        name = st.text_input("Business Name", "Sharma Premium Electronics")
-        phone = st.text_input("Verified Phone", "+91 98765 43210")
-        email = st.text_input("Business Email", "contact@sharma.com")
-    with col2:
-        category = st.text_input("Business Category", "Consumer Electronics Store")
-        address = st.text_area("Full Address (Must match Google Maps exactly)")
-        map_link = st.text_input("Google Maps Embed Link (from Share -> Embed Map)")
-
-with st.expander("Step 2: SEO & Trust Signals"):
-    services = st.text_area("Services (One per line)", "AC Repair\nOven Service\nGenuine Parts")
-    hours = st.text_input("Working Hours", "Mon - Sat: 10:00 AM - 08:00 PM")
-    description = st.text_area("SEO Description", "Leading electronics provider in South Delhi for 20+ years.")
-
-# --- THE HIGH-END HTML GENERATOR ---
-# This uses Tailwind CSS for a professional "SaaS" look
-enterprise_html = f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{name} | {category} in {address[:20]}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- ADVANCED SCHEMA FOR GOOGLE RANKING -->
-    <script type="application/ld+json">
-    {{
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      "name": "{name}",
-      "description": "{description}",
-      "address": {{ "@type": "PostalAddress", "streetAddress": "{address}" }},
-      "telephone": "{phone}",
-      "openingHours": "{hours}"
-    }}
-    </script>
-</head>
-<body class="bg-gray-50 font-['Inter']">
-
-    <!-- NAVBAR -->
-    <nav class="bg-white shadow-sm p-4 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <span class="text-xl font-bold text-blue-600">{name}</span>
-            <a href="tel:{phone}" class="bg-blue-600 text-white px-5 py-2 rounded-full font-semibold">Call Now</a>
-        </div>
-    </nav>
-
-    <!-- HERO SECTION -->
-    <header class="bg-white py-16 px-4">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">{name}</h1>
-            <p class="text-xl text-gray-600 mb-8">{description}</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="https://wa.me/{phone.replace(' ', '')}" class="bg-green-500 text-white px-8 py-3 rounded-lg font-bold">Order on WhatsApp</a>
-                <a href="#map" class="bg-gray-800 text-white px-8 py-3 rounded-lg font-bold">Visit Store</a>
+    # 2. SHARED ASSETS (Point 5: Mobile-Friendliness, Point 6: Speed)
+    # Using Tailwind for responsiveness and CDN for speed
+    header_html = f"""
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{biz_data['name']} - {biz_data['category']} in {biz_data['city']}</title>
+        <meta name="description" content="{biz_data['seo_description'][:160]}">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Point 14: Structured Data -->
+        <script type="application/ld+json">
+        {{
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "{biz_data['name']}",
+          "address": {{ "@type": "PostalAddress", "streetAddress": "{biz_data['address']}", "addressLocality": "{biz_data['city']}" }},
+          "telephone": "{biz_data['phone']}",
+          "url": "{biz_data['website_url']}"
+        }}
+        </script>
+    </head>
+    <body class="bg-white text-gray-800">
+        <nav class="p-4 border-b flex justify-between max-w-6xl mx-auto">
+            <a href="index.html" class="font-bold text-xl">{biz_data['name']}</a>
+            <div class="space-x-4">
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
             </div>
-        </div>
-    </header>
+        </nav>
+    """
 
-    <!-- SERVICES -->
-    <section class="py-12 bg-gray-50">
-        <div class="max-w-6xl mx-auto px-4">
-            <h2 class="text-2xl font-bold mb-8">Specialized Services</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                {"".join([f'<div class="bg-white p-6 rounded-xl shadow-sm border-b-4 border-blue-500"><h3 class="font-bold text-lg">{s}</h3><p class="text-gray-500 mt-2">Professional service in {address.split(",")[-1]}</p></div>' for s in services.splitlines()])}
+    footer_html = """
+        <footer class="p-10 bg-gray-100 mt-20 text-center border-t">
+            <div class="space-x-4 mb-4">
+                <a href="privacy.html" class="text-sm text-gray-500">Privacy Policy</a>
+                <a href="terms.html" class="text-sm text-gray-500">Terms & Conditions</a>
             </div>
-        </div>
-    </section>
+            <p class="text-xs text-gray-400">&copy; 2024 Optimized for Google Search.</p>
+        </footer>
+    </body>
+    """
 
-    <!-- MAP & CONTACT -->
-    <section id="map" class="py-12 bg-white">
-        <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-2 gap-12">
-            <div>
-                <h2 class="text-2xl font-bold mb-4">Contact & Location</h2>
-                <p class="text-gray-600 mb-2">📍 {address}</p>
-                <p class="text-gray-600 mb-2">📞 {phone}</p>
-                <p class="text-gray-600 mb-6">⏰ {hours}</p>
-                <div class="rounded-lg overflow-hidden border">
-                    {map_link}
-                </div>
-            </div>
-            <div class="bg-blue-50 p-8 rounded-2xl">
-                <h3 class="text-xl font-bold mb-4">Send a Query</h3>
-                <input type="text" placeholder="Your Name" class="w-full p-3 mb-4 rounded-lg border">
-                <textarea placeholder="How can we help you?" class="w-full p-3 mb-4 rounded-lg border h-32"></textarea>
-                <button class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold">Request a Callback</button>
-            </div>
-        </div>
-    </section>
+    # 3. GENERATE index.html (Point 11 & 12: Meta & Headings)
+    index_content = f"""
+    {header_html}
+    <main class="max-w-4xl mx-auto py-20 px-4 text-center">
+        <h1 class="text-5xl font-black mb-6">{biz_data['name']}</h1>
+        <p class="text-xl mb-8">{biz_data['long_content']}</p>
+        <img src="https://images.unsplash.com/photo-1556740734-7f9a2b7a0f42" alt="{biz_data['name']} storefront in {biz_data['city']}" class="rounded-lg mb-10 mx-auto"> <!-- Point 13: Alt Text -->
+    </main>
+    {footer_html}
+    """
+    with open(f"{folder_name}/index.html", "w") as f: f.write(index_content)
 
-</body>
-</html>
-"""
+    # 4. GENERATE MANDATORY PAGES (Point 17: Legal Compliance)
+    pages = ['about', 'contact', 'privacy', 'terms']
+    for page in pages:
+        content = f"{header_html}<main class='p-20'><h1>{page.capitalize()}</h1><p>Content for {biz_data['name']} {page} page.</p></main>{footer_html}"
+        with open(f"{folder_name}/{page}.html", "w") as f: f.write(content)
 
-if st.button("🚀 Generate 1st Class Business Website"):
-    st.subheader("Professional Website Code")
-    st.code(enterprise_html, language="html")
-    st.write("---")
-    st.subheader("Live Preview (Simulated)")
-    st.components.v1.html(enterprise_html, height=600, scrolling=True)
+    # 5. GENERATE robots.txt (Point 3)
+    with open(f"{folder_name}/robots.txt", "w") as f:
+        f.write(f"User-agent: *\nAllow: /\nSitemap: {biz_data['website_url']}/sitemap.xml")
+
+    # 6. GENERATE sitemap.xml (Point 15)
+    with open(f"{folder_name}/sitemap.xml", "w") as f:
+        f.write(f'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{biz_data["website_url"]}/index.html</loc></url></urlset>')
+
+    print(f"🚀 17-Point Compliant Site Built for {biz_data['name']}")
+
+# --- EXAMPLE DATA ---
+biz_info = {
+    "name": "Gupta Electronics",
+    "category": "Consumer Electronics Store",
+    "city": "Bengaluru",
+    "address": "123, MG Road, Indiranagar",
+    "phone": "+91 9886012345",
+    "website_url": "https://kani201012.github.io/local-business-sites/gupta-electronics",
+    "seo_description": "Best electronics store in Bengaluru. We provide professional AC repair and oven services.",
+    "long_content": "With over 20 years of experience, Gupta Electronics is the trusted choice for high-quality electronics and repair services in the Bengaluru area. Our team is certified..."
+}
+
+generate_compliant_site(biz_info)
